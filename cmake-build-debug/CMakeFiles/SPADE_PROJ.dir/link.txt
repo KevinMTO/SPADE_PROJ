@@ -1,0 +1,1 @@
+/usr/bin/cc -g  -Wl,--enable-auto-import CMakeFiles/SPADE_PROJ.dir/main.c.o  -o SPADE_PROJ.exe -Wl,--out-implib,libSPADE_PROJ.dll.a -Wl,--major-image-version,0,--minor-image-version,0 

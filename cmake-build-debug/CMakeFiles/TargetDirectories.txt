@@ -1,0 +1,3 @@
+/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/cmake-build-debug/CMakeFiles/SPADE_PROJ.dir
+/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/cmake-build-debug/CMakeFiles/edit_cache.dir
