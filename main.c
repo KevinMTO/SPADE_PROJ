@@ -238,7 +238,7 @@ IS* two_seq(IS* f1, float min_sup){
 char * spade(FILE* fp, float min_sup){
     printf("inside spade\n");
     IS* F1= one_seq(fp,min_sup);
-    IS* F2= two_seq(F1,minsup);
+    IS* F2= two_seq(F1,min_sup);
 /*
     Y* epsilon= equivalence_classes();//TODO da capire
 
