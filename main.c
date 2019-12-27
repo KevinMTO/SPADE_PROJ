@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
-#include<wchar.h>
+
 
 unsigned int empty_supp=0;
 
@@ -20,7 +20,7 @@ struct sequence{
     char * prefix;
     char * sequence;
 
-    int support;
+    unsigned int support;
     float rsup;
 
     TID * table;
@@ -28,13 +28,15 @@ struct sequence{
 }typedef IS;
 
 
+unsigned int updateRelSup(IS *pSequence,unsigned int sonNumb,float min_sup,unsigned int tot);
 
 /////////////////////////////////////////////////////////////////////////////////////
 int printer(IS* root,unsigned int sN){
     int i=0;
     for(i;i<sN;i++){
-
-        printf("SEQUENCE: %s\n",root->sons[i]->sequence);
+        printf("=============================================\n");
+        printf("SEQUENCE: %s\n=================\n",root->sons[i]->sequence);
+        printf("support: %d\n rsup: %f\n-----------\n",root->sons[i]->support,root->sons[i]->rsup);
         printf("V-idlist\n");
         line* start= root->sons[i]->table->tableline;
         if(start==NULL) return 0;
@@ -48,15 +50,16 @@ int printer(IS* root,unsigned int sN){
     return 0;
 }
 
-//if tooo slow we can save the tail and just pass the tail address for the add
-int addLine(TID* table, int sid,int eid){
+//TODO if tooo slow we can save the tail and just pass the tail address for the add
+int addLine(IS* atom, int sid,int eid){
 
-    line* lin = table->tableline;
+    line* lin = atom->table->tableline;
 
     if(lin==NULL){
-        table->tableline= (line*) calloc(1, sizeof(line));
-        table->tableline->sid=sid;
-        table->tableline->eid=eid;
+        atom->table->tableline= (line*) calloc(1, sizeof(line));
+        atom->table->tableline->sid=sid;
+        atom->table->tableline->eid=eid;
+        atom->support++;
         return 0;
     }
 
@@ -64,18 +67,22 @@ int addLine(TID* table, int sid,int eid){
         lin = lin->next;
     }
 
+    if(lin->sid!=sid){
+        atom->support++;
+    }
     lin->next= (line*) calloc(1, sizeof(line));
     lin->next->sid=sid;
     lin->next->eid=eid;
     return 0;
 }
 
+//TODO DECIDE IF I NEED HASHING
 IS* present(char* item, IS* root, unsigned int sonNumb){
     int i=0;
-    int r;
+    //int r;
     IS* RESULT=NULL;
     for(i; i<sonNumb;i++){
-        if(r=strcmp(root->sons[i]->sequence,item)==0) {
+        if(strcmp(root->sons[i]->sequence,item)==0) {//r=
             RESULT=root->sons[i];
             return root->sons[i];
         }
@@ -83,8 +90,8 @@ IS* present(char* item, IS* root, unsigned int sonNumb){
     return NULL;
 }
 
-IS* one_seq(FILE* fp, int min_sup){
-    int initial_sons=11;
+IS* one_seq(FILE* fp, float min_sup){
+    int initial_sons=6;
     unsigned int oldsid;
     unsigned int sonNumb=0;
     int id_counter=0;
@@ -97,22 +104,25 @@ IS* one_seq(FILE* fp, int min_sup){
     empty_set->support=0;
     empty_set->sons= (IS**) realloc(NULL, initial_sons*sizeof(IS*));
 
-    printf(("here"));
+    //printf(("here"));
     char * line = NULL;
     size_t len = 100;
     //ssize_t read;
 
     while ((getline(&line, &len, fp)) != -1) { //todo cancellare le azioni verso read var
         char * field1= strtok(line,"{ } \" ");
-        char * copy_field1= (char*) calloc(strlen(field1), sizeof(char));
-        strcpy(copy_field1,field1);
+        //char * copy_field1= (char*) calloc(strlen(field1), sizeof(char));
+        //strcpy(copy_field1,field1);
 
 //        printf("field1 is %s\n", field1);
 //        printf("Retrieved line of length %zu:\n", read);
 //        printf("%s\n", field1);
         int sid = atoi(strtok(NULL,"{ }, \"  "));
 
-        if(empty_set->support==0){oldsid=sid;}
+        if(empty_set->support==0){
+            oldsid=sid;
+            empty_set->support++;
+        }
         else if(sid!=oldsid){
             oldsid=sid;
             empty_set->support++;
@@ -146,13 +156,17 @@ IS* one_seq(FILE* fp, int min_sup){
                     empty_set->sons[sonNumb]->table=(TID*) calloc(1,sizeof(TID));
                     //of sid is new allocate new spaces and append
 
-                    addLine(empty_set->sons[sonNumb]->table,sid,eid);
+                    addLine(empty_set->sons[sonNumb],sid,eid);
+                    //compute rsup
+
 
                     sonNumb++;
             }
             else{
                     //based on asssumption that we're reading data already order
-                    addLine(atom->table,sid,eid);
+                    addLine(atom,sid,eid);
+                    //compute rsup
+                    //empty_set->sons[sonNumb]->rsup=((float)empty_set->sons[sonNumb]->support)/((float)empty_set->support);
             }
 
             decompose= strtok(NULL,", ");
@@ -161,13 +175,58 @@ IS* one_seq(FILE* fp, int min_sup){
 
 
     }
-    printer(empty_set,sonNumb);
+    unsigned int realsons=updateRelSup(empty_set,sonNumb,min_sup,empty_set->support);
+    printer(empty_set,realsons);
 return NULL;
 }
 
+unsigned int updateRelSup(IS* root, unsigned int sonNumb, float min_sup, unsigned int tot){
+    int i=0;
+    int realSons=sonNumb;
+    line* l;
+    for(i; i<sonNumb;i++){
+        root->sons[i]->rsup=(float) root->sons[i]->support/tot;
+        //compute rsup
+        if(root->sons[i]->rsup<min_sup){
+            char* who= root->sons[i]->sequence;
+            free(root->sons[i]->sequence);
+            free(root->sons[i]->prefix);
+            l=root->sons[i]->table->tableline;
+            line*temp=NULL;
+            while(l->next!=NULL){
+                temp=l;
+                l = l->next;
+                free(temp);
+            }
+
+            free(l);
+            free(root->sons[i]->table);
+            root->sons[i]=NULL;
+            realSons--;
+        }
+    }
+    IS** new_sons= (IS**) calloc(realSons, sizeof(IS*));
+    int k=0;
+    for(i=0;i<realSons;i++){
+        while(k<sonNumb){
+            if(root->sons[k]!=NULL){
+                new_sons[i]=root->sons[k];
+                k++;
+                break;
+            }
+            k++;
+        }
+    }
+    free(root->sons);
+    root->sons=new_sons;
+    return realSons;
+}
 
 
-IS* two_seq(IS* f1, int min_sup){
+
+IS* two_seq(IS* f1, float min_sup){
+
+
 
 }
 
@@ -176,10 +235,10 @@ IS* two_seq(IS* f1, int min_sup){
 
 
 
-char * spade(FILE* fp, int minsup){
-    printf("inside spade");
-    IS* F1= one_seq(fp,minsup);
-    //IS* F2= two_seq(F1,minsup);
+char * spade(FILE* fp, float min_sup){
+    printf("inside spade\n");
+    IS* F1= one_seq(fp,min_sup);
+    IS* F2= two_seq(F1,minsup);
 /*
     Y* epsilon= equivalence_classes();//TODO da capire
 
@@ -194,13 +253,13 @@ char * spade(FILE* fp, int minsup){
 
 int main() {
     FILE *fp;
-    printf("ciao");
+
     fp  = fopen ("C:\\Users\\Kev\\Documenti\\zaki.txt", "r");
-    printf("11111");
+
     if (fp == NULL)
         exit(EXIT_FAILURE);
-    printf("2222");
-    int min_sup=0;
+    printf("file opened.\n");
+    float min_sup=0.50;
 
     spade(fp, min_sup);
 
