@@ -37,7 +37,7 @@ struct freq1{
 
 unsigned int updateRelSup(IS *pSequence,unsigned int sonNumb,float min_sup,unsigned int tot);
 
-F1 *create2Seq(IS *a1, IS *a2);
+IS* create2Seq(IS* precedent, IS* conseq,int equal);
 
 /////////////////////////////////////////////////////////////////////////////////////
 int printer(IS* root,unsigned int sN){
@@ -104,6 +104,12 @@ IS* present(char* item, IS* root, unsigned int sonNumb){
     }
     return NULL;
 }
+////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
 
 F1* one_seq(FILE* fp, float min_sup){
     int initial_sons=6;
@@ -169,9 +175,12 @@ F1* one_seq(FILE* fp, float min_sup){
                     id_counter++;
 
                     empty_set->sons[sonNumb]->sons=NULL;
-                    empty_set->sons[sonNumb]->table=(TID*) calloc(1,sizeof(TID));
-                    //of sid is new allocate new spaces and append
+                    empty_set->sons[sonNumb]->nSons=0;
 
+
+                     empty_set->sons[sonNumb]->table=(TID*) calloc(1,sizeof(TID));
+                    //of sid is new allocate new spaces and append
+                    empty_set->sons[sonNumb]->table->tableline=NULL;
                     addLine(empty_set->sons[sonNumb],sid,eid);
                     //compute rsup
 
@@ -198,7 +207,7 @@ F1* one_seq(FILE* fp, float min_sup){
 
     F1* result= (F1*) calloc(1, sizeof(F1));
     result->root=empty_set;
-    result->atoms=sonNumb;
+    result->atoms=empty_set->nSons;
     result->tot_sids=empty_set->support;
 return result;
 }
@@ -209,19 +218,22 @@ unsigned int updateRelSup(IS* root, unsigned int sonNumb, float min_sup, unsigne
     line* l;
     for(i; i<sonNumb;i++){
         root->sons[i]->rsup=(float) root->sons[i]->support/tot;
+        //printf("DEBUG FLOAT %s %f",root->sequence,root->sons[i]->rsup);
         //compute rsup
         if(root->sons[i]->rsup<min_sup){
             char* who= root->sons[i]->sequence;
             free(root->sons[i]->sequence);
             l=root->sons[i]->table->tableline;
             line*temp=NULL;
-            while(l->next!=NULL){
-                temp=l;
-                l = l->next;
-                free(temp);
-            }
+            if(l!=NULL){
+                while(l->next!=NULL){
+                    temp=l;
+                    l = l->next;
+                    free(temp);
+                }
 
-            free(l);
+                free(l);
+            }
             free(root->sons[i]->table);
             root->sons[i]=NULL;
             realSons--;
@@ -246,31 +258,101 @@ unsigned int updateRelSup(IS* root, unsigned int sonNumb, float min_sup, unsigne
 
 
 
-IS* two_seq(IS* f1, float min_sup,unsigned int nAtoms,unsigned int tot_sids){
+void two_seq(IS* f1, float min_sup,unsigned int nAtoms,unsigned int tot_sids){
     ///complexity A*N*(N-1)/2
     ///A instances of lines, N number of frequent atoms, worst case all of them
-    int initial=0;
+    unsigned int allocate=0;
     int i=0,j=0;
     IS* atom1=NULL;
-    IS*atom2=NULL;
-    F1*result=NULL;
+    IS* atom2=NULL;
+
+    for(j;j<nAtoms;j++){
+        atom1=f1->sons[j];
+        atom1->sons=(IS**) calloc(1,sizeof(IS*));
+        atom1->sons[atom1->nSons ]=create2Seq(atom1,atom1,0);
+        atom1->nSons++;
+    }
+
 
     for(i;i<nAtoms;i++){
-        for(j;j<nAtoms;j++){
-            atom1=f1->sons[i];
+        j=i+1;
+        if(j==nAtoms) j=0;
+        atom1=f1->sons[i];
+        atom1->sons=(IS**) realloc(atom1->sons, (2*(nAtoms-1)+1)*sizeof(IS*));
+        while(j!=i){
             atom2=f1->sons[j];
-            result=create2Seq(atom1,atom2);
-            atom1->sons=(IS**)result->atoms;
-            updateRelSup(atom1,result->atoms,min_sup,tot_sids);
+            atom1->sons[atom1->nSons ]=create2Seq(atom1,atom2,0);
+            atom1->nSons++;
+            j++;
+            if(j==nAtoms) j=0;
+        }
+    }
+    for(i=0;i<nAtoms;i++){
+        atom1=f1->sons[i];
+        j=i+1;
+        for(j;j<nAtoms;j++){
+            atom2=f1->sons[j];
+            atom1->sons[atom1->nSons ]=create2Seq(atom1,atom2,1);
+            atom1->nSons++;
         }
     }
 
+    for(i=0;i<nAtoms;i++){
+        f1->sons[i]->nSons=updateRelSup(f1->sons[i],f1->sons[i]->nSons,min_sup,tot_sids);
+    }
+    for(i=0;i<nAtoms;i++){
+        printer(f1->sons[i],f1->sons[i]->nSons);
+    }
 }
 
+
+IS* create2Seq(IS* precedent, IS* conseq,int equal){
+
+    char* seq2Name=(char*) calloc(strlen(precedent->sequence)+strlen(conseq->sequence)+5, sizeof(char));
+
+    IS*newBorn2Seq=(IS*) calloc(1,sizeof(IS));
+    newBorn2Seq->sequence=(char*) calloc(strlen(seq2Name), sizeof(char));;//allocat memory for worst case in 2seq
+
+    newBorn2Seq->prefix=0;//////////////////////TODO SUPER UNDERSTAND WHAT TO PUT AS PREFIX EVERYWHERE
+    newBorn2Seq->nSons=0;
+    newBorn2Seq->support=0;
+    newBorn2Seq->rsup=0;
+    newBorn2Seq->sons=NULL;
+    newBorn2Seq->table=(TID*) calloc(1, sizeof(TID));
+    newBorn2Seq->table->tableline=NULL;
+    newBorn2Seq->id=id_counter++;
+
+
+    line* l1=precedent->table->tableline;
+    line* l2;
+    if(equal==0) {
+        sprintf(seq2Name,"{%s},{%s}",precedent->sequence,conseq->sequence);
+        for (l1; l1 != NULL; l1 = l1->next) {
+            for (l2=conseq->table->tableline; l2 != NULL && l2->sid<=l1->sid; l2 = l2->next){
+                if(l1->sid==l2->sid && l2->eid>l1->eid){
+                    addLine(newBorn2Seq,l2->sid,l2->eid);
+                }
+            }
+
+        }
+    } else{
+        sprintf(seq2Name,"{%s,%s}",precedent->sequence,conseq->sequence);
+        for (l1; l1 != NULL; l1 = l1->next) {
+            for (l2=conseq->table->tableline;  l2 != NULL && l2->sid<=l1->sid; l2 = l2->next){
+                if(l1->sid==l2->sid && l2->eid==l1->eid){
+                    addLine(newBorn2Seq,l2->sid,l2->eid);
+                }
+            }
+
+        }
+    }
+    strcpy(newBorn2Seq->sequence,seq2Name);
+    return newBorn2Seq;
+}
+/*
 //TODO FIX IN ORDER TO RECYCLE TABLE ANALYSIS
 F1 *create2Seq(IS *a1, IS *a2) {
-    a1->nSons=0;
-    a2->nSons=0;
+
     unsigned int allocate=1;
     line* interval_start=NULL;
 
@@ -280,46 +362,72 @@ F1 *create2Seq(IS *a1, IS *a2) {
 
     line* l1=a1->table->tableline;
     line* l2=a2->table->tableline;
+    line* checkpoint=l2;
     IS* seq2atom=NULL;
 
-    while(l1->next!=NULL && l2->next!=NULL ){
+while(l1->next!=NULL && l2->next!=NULL ){
 
-        //intersecting the tables
-        if(l1->sid==l2->sid){
+    //intersecting the tables
+    if(l1->sid==l2->sid){
 
-                    if(l1->eid>l2->eid){//happens later
-                        sprintf(seq2Name,"{%s},{%s}",a2->sequence,a1->sequence);
+                if(l1->eid>l2->eid){//happens later
+                    sprintf(seq2Name,"{%s},{%s}",a2->sequence,a1->sequence);
 
-                        //sons already existing or not
-                        if(seq2atom= (IS*) present(seq2Name,a2,a2->nSons)!=NULL){
-                            addLine(seq2atom,l1->sid,l1->eid);
+                    //sons already existing or not
+                    if(seq2atom= (IS*) present(seq2Name,a2,a2->nSons)!=NULL){
+                        addLine(seq2atom,l1->sid,l1->eid);
+                    }
+                    else{
+                        IS*newBorn2Seq=(IS*) calloc(1,sizeof(IS));
+                        newBorn2Seq->sequence=(char*) calloc(strlen(seq2Name), sizeof(char));//allocat memory for worst case in 2seq
+                        strcpy(newBorn2Seq->sequence,seq2Name);
+                        newBorn2Seq->prefix=0;//////////////////////TODO SUPER UNDERSTAND WHAT TO PUT AS PREFIX EVERYWHERE
+                        newBorn2Seq->nSons=0;
+                        newBorn2Seq->sons=NULL;
+                        newBorn2Seq->table=(TID*) calloc(1, sizeof(TID));
+                        newBorn2Seq->id=id_counter++;
+
+                        a2->nSons++;
+                        if((a2->nSons)>allocate){
+                            allocate=allocate*2;
+                            a2->sons=(IS**) realloc(a2->sons,allocate* sizeof(IS*));
+                            a2->sons[a2->nSons ]=newBorn2Seq;
                         }
-                        else{
-                            IS*newBorn2Seq=(IS*) calloc(1,sizeof(IS));
-                            newBorn2Seq->sequence=(char*) calloc(strlen(seq2Name), sizeof(char));//allocat memory for worst case in 2seq
-                            strcpy(newBorn2Seq->sequence,seq2Name);
-                            newBorn2Seq->prefix=0;//////////////////////TODO SUPER UNDERSTAND WHAT TO PUT AS PREFIX EVERYWHERE
-                            newBorn2Seq->nSons=0;
-                            newBorn2Seq->sons=NULL;
-                            newBorn2Seq->table=(TID*) calloc(1, sizeof(TID));
-                            newBorn2Seq->id=id_counter++;
+                        addLine(newBorn2Seq,l1->sid,l1->eid);
+                    }
 
-                            a2->nSons++;
-                            if((a2->nSons)>allocate){
-                                allocate=allocate*2;
-                                a2->sons=(IS**) realloc(a2->sons,allocate* sizeof(IS*));
-                                a2->sons[a2->nSons ]=newBorn2Seq;
+
+                } else if (l1->eid<l2->eid) {//happens before
+                            sprintf(seq2Name,"{%s},{%s}",a1->sequence,a2->sequence);
+
+                            //sons already existing or not
+                            if(seq2atom=(IS*)present(seq2Name,a1,a1->nSons)!=NULL){
+                                addLine(seq2atom,l2->sid,l2->eid);
                             }
-                            addLine(newBorn2Seq,l1->sid,l1->eid);
-                        }
+                            else{
+                                IS*newBorn2Seq=(IS*) calloc(1,sizeof(IS));
+                                newBorn2Seq->sequence=(char*) calloc(strlen(seq2Name), sizeof(char));//allocat memory for worst case in 2seq
+                                strcpy(newBorn2Seq->sequence,seq2Name);
+                                newBorn2Seq->prefix=0;//////////////////////TODO SUPER UNDERSTAND WHAT TO PUT AS PREFIX EVERYWHERE
+                                newBorn2Seq->nSons=0;
+                                newBorn2Seq->sons=NULL;
+                                newBorn2Seq->table=(TID*) calloc(1, sizeof(TID));
+                                newBorn2Seq->id=id_counter++;
 
-
-                    } else if (l1->eid<l2->eid) {//happens before
-                                sprintf(seq2Name,"{%s},{%s}",a1->sequence,a2->sequence);
+                                a1->nSons++;
+                                if((a1->nSons)>allocate){
+                                    allocate=allocate*2;
+                                    a1->sons=(IS**) realloc(a1->sons,allocate* sizeof(IS*));
+                                    a1->sons[a1->nSons ]=newBorn2Seq;
+                                }
+                                addLine(newBorn2Seq,l2->sid,l2->eid);
+                            }
+                } else{//happens at the same time
+                                sprintf(seq2Name,"{%s,%s}",a1->sequence,a2->sequence);
 
                                 //sons already existing or not
-                                if(seq2atom=(IS*)present(seq2Name,a1,a1->nSons)!=NULL){
-                                    addLine(seq2atom,l2->sid,l2->eid);
+                                if(seq2atom=(IS*)present(seq2Name,a2,a2->nSons)!=NULL){
+                                    addLine(seq2atom,l1->sid,l1->eid);
                                 }
                                 else{
                                     IS*newBorn2Seq=(IS*) calloc(1,sizeof(IS));
@@ -337,66 +445,39 @@ F1 *create2Seq(IS *a1, IS *a2) {
                                         a1->sons=(IS**) realloc(a1->sons,allocate* sizeof(IS*));
                                         a1->sons[a1->nSons ]=newBorn2Seq;
                                     }
-                                    addLine(newBorn2Seq,l2->sid,l2->eid);
+                                    addLine(newBorn2Seq,l1->sid,l1->eid);
                                 }
-                    } else{//happens at the same time
-                                    sprintf(seq2Name,"{%s,%s}",a1->sequence,a2->sequence);
 
-                                    //sons already existing or not
-                                    if(seq2atom=(IS*)present(seq2Name,a2,a2->nSons)!=NULL){
-                                        addLine(seq2atom,l1->sid,l1->eid);
-                                    }
-                                    else{
-                                        IS*newBorn2Seq=(IS*) calloc(1,sizeof(IS));
-                                        newBorn2Seq->sequence=(char*) calloc(strlen(seq2Name), sizeof(char));//allocat memory for worst case in 2seq
-                                        strcpy(newBorn2Seq->sequence,seq2Name);
-                                        newBorn2Seq->prefix=0;//////////////////////TODO SUPER UNDERSTAND WHAT TO PUT AS PREFIX EVERYWHERE
-                                        newBorn2Seq->nSons=0;
-                                        newBorn2Seq->sons=NULL;
-                                        newBorn2Seq->table=(TID*) calloc(1, sizeof(TID));
-                                        newBorn2Seq->id=id_counter++;
-
-                                        a1->nSons++;
-                                        if((a1->nSons)>allocate){
-                                            allocate=allocate*2;
-                                            a1->sons=(IS**) realloc(a1->sons,allocate* sizeof(IS*));
-                                            a1->sons[a1->nSons ]=newBorn2Seq;
-                                        }
-                                        addLine(newBorn2Seq,l1->sid,l1->eid);
-                                    }
-
-                    }
-        }
-        else{// is sids are not equal I change line based on which is greater bcs sids must be in order
-            /////////////////////////TODO le righe con gli stessi sid vanno confrontante con tutte le righe con gli stessi sid
-                if(l1->sid>l2->sid) {
-                    if (l1->next != NULL) {
-                        l1 = l1->next;
-                    }
                 }
-                else{
-                    l2=l2->next;
-                }
+    }
+    else{// is sids are not equal I change line based on which is greater bcs sids must be in order
+        /////////////////////////TODO le righe con gli stessi sid vanno confrontante con tutte le righe con gli stessi sid
+        if(l1->next->sid==){
+
         }
     }
-
-    if(l1->sid==l2->sid){
-
-    }
-    else{
-
-    }
-
-    return NULL;
 }
+
+
+
+return NULL;
+}
+
+
+*/
+
 
 
 char * spade(FILE* fp, float min_sup){
     printf("inside spade\n");
     F1* F1= one_seq(fp,min_sup);
-    //IS* F2= two_seq(F1->root,min_sup,F1->atoms,F1->tot_sids);
+    two_seq(F1->root,min_sup,F1->atoms,F1->tot_sids);
+
+    unsigned int f=0;
+    //for(f;f<F1->atoms;f++){
+        //printer(F1->root->sons[f],F1->root->sons[f]->nSons);
+    //}
 /*
-    //Y* epsilon= equivalence_classes();//TODO da capire
 
     Z* sequences= enumerate_freq(epsilon);
 */
@@ -416,7 +497,7 @@ int main() {
         exit(EXIT_FAILURE);
     printf("file opened.\n");
 
-    float min_sup=0;
+    float min_sup=0.26;
 
     spade(fp, min_sup);
 
