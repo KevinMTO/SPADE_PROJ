@@ -4,6 +4,8 @@
 
 //GLOBAL VARIABLE IN THE WALL OF CODE
 int id_counter=0;
+int BFS=0;
+int DFS=1;
 
 //TODO IDEA HASHING W. tail
 struct lineInTable{
@@ -34,6 +36,15 @@ struct freq1{
     unsigned int atoms;
     unsigned int tot_sids;
 }typedef F1;
+
+struct prefix{
+short int type1;
+short int type2;
+int split1;
+int split2;
+}typedef PREFIX;
+
+
 
 unsigned int updateRelSup(IS *pSequence,unsigned int sonNumb,float min_sup,unsigned int tot);
 
@@ -212,33 +223,46 @@ F1* one_seq(FILE* fp, float min_sup){
 return result;
 }
 
+
+
+void cleanTable(TID* tab){
+    line* l;
+    l =tab->tableline;
+    line *temp = NULL;
+    if (l != NULL) {
+        while (l->next != NULL) {
+            temp = l;
+            l = l->next;
+            free(temp);
+        }
+
+        free(l);
+    }
+}
+void clean(IS* node) {
+    char *who = node->sequence;// FOR DEBUGGING
+    if(node->table!=NULL) {
+        cleanTable(node->table);
+        free(node->sequence);
+        free(node->table);
+    }
+}
+
 unsigned int updateRelSup(IS* root, unsigned int sonNumb, float min_sup, unsigned int tot){
     int i=0;
     int realSons=sonNumb;
-    line* l;
+
     for(i; i<sonNumb;i++){
         root->sons[i]->rsup=(float) root->sons[i]->support/tot;
         //printf("DEBUG FLOAT %s %f",root->sequence,root->sons[i]->rsup);
         //compute rsup
         if(root->sons[i]->rsup<min_sup){
-            char* who= root->sons[i]->sequence;
-            free(root->sons[i]->sequence);
-            l=root->sons[i]->table->tableline;
-            line*temp=NULL;
-            if(l!=NULL){
-                while(l->next!=NULL){
-                    temp=l;
-                    l = l->next;
-                    free(temp);
-                }
-
-                free(l);
-            }
-            free(root->sons[i]->table);
+            clean(root->sons[i]);
             root->sons[i]=NULL;
             realSons--;
         }
     }
+
     IS** new_sons= (IS**) calloc(realSons, sizeof(IS*));
     int k=0;
     for(i=0;i<realSons;i++){
@@ -303,6 +327,11 @@ void two_seq(IS* f1, float min_sup,unsigned int nAtoms,unsigned int tot_sids){
     for(i=0;i<nAtoms;i++){
         printer(f1->sons[i],f1->sons[i]->nSons);
     }
+    for(i=0;i<nAtoms;i++){
+        cleanTable(f1->sons[i]->table);
+        free(f1->sons[i]->table);
+        f1->sons[i]->table=NULL;
+    }
 }
 
 
@@ -313,7 +342,7 @@ IS* create2Seq(IS* precedent, IS* conseq,int equal){
     IS*newBorn2Seq=(IS*) calloc(1,sizeof(IS));
     newBorn2Seq->sequence=(char*) calloc(strlen(seq2Name), sizeof(char));;//allocat memory for worst case in 2seq
 
-    newBorn2Seq->prefix=0;//////////////////////TODO SUPER UNDERSTAND WHAT TO PUT AS PREFIX EVERYWHERE
+    //newBorn2Seq->prefix=0;//////////////////////TODO SUPER UNDERSTAND WHAT TO PUT AS PREFIX EVERYWHERE
     newBorn2Seq->nSons=0;
     newBorn2Seq->support=0;
     newBorn2Seq->rsup=0;
@@ -327,6 +356,7 @@ IS* create2Seq(IS* precedent, IS* conseq,int equal){
     line* l2;
     if(equal==0) {
         sprintf(seq2Name,"{%s},{%s}",precedent->sequence,conseq->sequence);
+        newBorn2Seq->prefix=0;//////////////////////TODO SUPER UNDERSTAND WHAT TO PUT AS PREFIX EVERYWHERE
         for (l1; l1 != NULL; l1 = l1->next) {
             for (l2=conseq->table->tableline; l2 != NULL && l2->sid<=l1->sid; l2 = l2->next){
                 if(l1->sid==l2->sid && l2->eid>l1->eid){
@@ -337,6 +367,7 @@ IS* create2Seq(IS* precedent, IS* conseq,int equal){
         }
     } else{
         sprintf(seq2Name,"{%s,%s}",precedent->sequence,conseq->sequence);
+        newBorn2Seq->prefix=1;//////////////////////TODO SUPER UNDERSTAND WHAT TO PUT AS PREFIX EVERYWHERE
         for (l1; l1 != NULL; l1 = l1->next) {
             for (l2=conseq->table->tableline;  l2 != NULL && l2->sid<=l1->sid; l2 = l2->next){
                 if(l1->sid==l2->sid && l2->eid==l1->eid){
@@ -467,20 +498,260 @@ return NULL;
 */
 
 
+IS* createKSeq(IS* precedent, IS* conseq,int equal,int level){
+
+    char* seq2Name=(char*) calloc(strlen(precedent->sequence)+strlen(conseq->sequence)+5, sizeof(char));
+
+    IS*newBorn2Seq=(IS*) calloc(1,sizeof(IS));
+    newBorn2Seq->sequence=(char*) calloc(strlen(seq2Name), sizeof(char));;//allocat memory for worst case in 2seq
+
+    newBorn2Seq->nSons=0;
+    newBorn2Seq->support=0;
+    newBorn2Seq->rsup=0;
+    newBorn2Seq->sons=NULL;
+    newBorn2Seq->table=(TID*) calloc(1, sizeof(TID));
+    newBorn2Seq->table->tableline=NULL;
+    newBorn2Seq->id=id_counter++;
+
+    int i=0,j=0,counter1=level,counter2=level;
+    while(counter1!=0 && precedent->sequence[i]!='\0'){
+        if(precedent->sequence[i]==',') counter1--;
+        i++;
+    }
+    while(counter2!=0 && conseq->sequence[j]!='\0'){
+        if(conseq->sequence[j]==',') counter2--;
+        j++;
+    }
+    int min= ((i<j)?i:j);
+    char* pref1=(char*) calloc(min,sizeof(char));
+    char* pref2=(char*) calloc(min,sizeof(char));
+/*    if(i==j){
+
+        int k=0;
+        for(k;k<i;k++){
+            if(precedent->sequence[k]==conseq->sequence[k]){
+                pref[k]=precedent->sequence[k];
+            }
+            else return NULL;
+            k++;
+        }
+        pref[k]='\0';
+    }
+    else {
+        free(pref);
+        return NULL;
+    }*/
+    snprintf(pref1,min,"%s",precedent->sequence);
+    snprintf(pref2,min,"%s",conseq->sequence);
+    if(strcmp(pref1,pref2)!=0){
+        free(newBorn2Seq->table);
+        free(newBorn2Seq);
+        return NULL;
+    }
+
+    char* a=(char*) calloc(strlen(precedent->sequence), sizeof(char));
+    char* b=(char*) calloc(strlen(conseq->sequence), sizeof(char));
+    strcpy(a,precedent->sequence);
+    strcpy(b,conseq->sequence);
+    a=strtok(a+i," ,{}");
+    b=strtok(b+j," ,{}");
+
+
+    line* l1=precedent->table->tableline;
+    line* l2;
+    if(equal==0) {
+        if (precedent->prefix==0 && conseq->prefix==0){
+            sprintf(seq2Name, "%s,{%s},{%s}", pref1, a,b);
+            newBorn2Seq->prefix = 0;//////////////////////TODO SUPER UNDERSTAND WHAT TO PUT AS PREFIX EVERYWHERE
+            for (l1; l1 != NULL; l1 = l1->next) {
+                for (l2 = conseq->table->tableline; l2 != NULL && l2->sid <= l1->sid; l2 = l2->next) {
+                    if (l1->sid == l2->sid && l2->eid > l1->eid) {
+                        addLine(newBorn2Seq, l2->sid, l2->eid);
+                    }
+                }
+
+            }
+         }
+        if(precedent->prefix==1 && conseq->prefix==0) {
+            sprintf(seq2Name, "%s,{%s}", precedent->sequence, b);
+            newBorn2Seq->prefix = 0;//////////////////////TODO SUPER UNDERSTAND WHAT TO PUT AS PREFIX EVERYWHERE
+            for (l1; l1 != NULL; l1 = l1->next) {
+                for (l2 = conseq->table->tableline; l2 != NULL && l2->sid <= l1->sid; l2 = l2->next) {
+                    if (l1->sid == l2->sid && l2->eid == l1->eid) {
+                        addLine(newBorn2Seq, l2->sid, l2->eid);
+                    }
+                }
+
+            }
+        }
+        if(precedent->prefix==0 && conseq->prefix==1) {
+            free(newBorn2Seq->table);
+            free(newBorn2Seq);
+            return NULL;
+        }
+       if(precedent->prefix==1 && conseq->prefix==1) {
+            free(newBorn2Seq->table);
+            free(newBorn2Seq);
+            return NULL;
+       }
+
+    } else{
+        if(precedent->prefix==0 && conseq->prefix==0) {
+            sprintf(seq2Name, "%s,{%s,%s}",pref1, a, b);
+            newBorn2Seq->prefix = 1;//////////////////////TODO SUPER UNDERSTAND WHAT TO PUT AS PREFIX EVERYWHERE
+            for (l1; l1 != NULL; l1 = l1->next) {
+                for (l2 = conseq->table->tableline; l2 != NULL && l2->sid <= l1->sid; l2 = l2->next) {
+                    if (l1->sid == l2->sid && l2->eid == l1->eid) {
+                        addLine(newBorn2Seq, l2->sid, l2->eid);
+                    }
+                }
+
+            }
+        }
+        if(precedent->prefix==1 && conseq->prefix==0){
+            free(newBorn2Seq->table);
+            free(newBorn2Seq);
+            return NULL;
+        }
+        if(precedent->prefix==0 && conseq->prefix==1){
+            free(newBorn2Seq->table);
+            free(newBorn2Seq);
+            return NULL;
+        }
+        if(precedent->prefix==1 && conseq->prefix==1) {
+        sprintf(seq2Name, "%s,%s,%s}",pref1, a, b);
+        newBorn2Seq->prefix = 1;//////////////////////TODO SUPER UNDERSTAND WHAT TO PUT AS PREFIX EVERYWHERE
+        for (l1; l1 != NULL; l1 = l1->next) {
+            for (l2 = conseq->table->tableline; l2 != NULL && l2->sid <= l1->sid; l2 = l2->next) {
+                if (l1->sid == l2->sid && l2->eid == l1->eid) {
+                    addLine(newBorn2Seq, l2->sid, l2->eid);
+                }
+            }
+
+        }
+        }
+    }
+    free(pref1);
+    free(pref2);
+    free(a);
+    free(b);
+    strcpy(newBorn2Seq->sequence,seq2Name);
+    return newBorn2Seq;
+}
+
+int enumerate_freq(IS** f1, float min_sup,unsigned int nAtoms,unsigned int tot_sids, int level){
+
+
+    if(f1==NULL || nAtoms==0) return 0;
+    unsigned int TOTAL_SONS=0;
+    unsigned int allocate=0;
+    IS* new_assignment;
+    int i=0,j=0;
+    IS* atom1=NULL;
+    IS* atom2=NULL;
+
+    for(i;i<nAtoms;i++){
+
+        //controlla che il tipo di prefisso sia consono
+        atom1=f1[i];
+        new_assignment=NULL;
+        if(!atom1->prefix){
+            if( (new_assignment=createKSeq(atom1,atom1,0,level))!=NULL) {
+                atom1->sons = (IS **) calloc(1, sizeof(IS *));
+                atom1->sons[atom1->nSons] = new_assignment;
+                atom1->nSons++;
+            }
+        }
+
+        j=i+1;
+        if(j==nAtoms) j=0;
+
+        atom1->sons=(IS**) realloc(atom1->sons, (2*(nAtoms-1)+1)*sizeof(IS*));
+        while(j!=i){//TODO TOGLIERE CIRCOLARITA'
+
+            atom2=f1[j];
+            new_assignment=NULL;
+            if((new_assignment=createKSeq(atom1,atom2,0,level))!=NULL){
+                atom1->sons[atom1->nSons ]=new_assignment;
+                atom1->nSons++;
+            }
+            new_assignment=NULL;
+            if((new_assignment=createKSeq(atom1,atom2,1,level))!=NULL) {
+                atom1->sons[atom1->nSons] = new_assignment;
+                atom1->nSons++;
+            }
+
+            j++;
+            if(j==nAtoms) j=0;
+        }
+        atom1->nSons=updateRelSup(atom1,atom1->nSons,min_sup,tot_sids);
+        TOTAL_SONS=TOTAL_SONS+atom1->nSons;
+
+        //////////////////////////////////////////////////////////////////////TODO DA DECIDERE
+        //COME PULIRE LE MEMORIEEEEEEEEEEE-------- pulisco qui
+        ///////////////////////////////////////////////////////////////////////////////
+        if(DFS){
+            enumerate_freq(atom1->sons, min_sup, atom1->nSons, tot_sids, level + 1);
+        }
+    }
+
+    if(BFS) {
+        for(i=0;i<nAtoms;i++){
+            cleanTable(f1[i]->table);
+            free(f1[i]->table);
+            f1[i]->table=NULL;
+        }
+
+        IS **T = (IS **) calloc(TOTAL_SONS, sizeof(IS *));
+        int h = 0, p = 0, r = 0;
+        for (p = 0; p < nAtoms; p++) {
+            for (r; f1[p]->nSons; r++) {
+                T[h] = f1[p]->sons[r];
+                h++;
+            }
+        }
+
+        enumerate_freq(T, min_sup, TOTAL_SONS, tot_sids, level + 1);
+    }
+    for(i=0;i<nAtoms;i++){
+        printer(f1[i],f1[i]->nSons);
+    }
+    return 1;
+}
+
+
+
+void enumerate(IS* f1, float min_sup, unsigned int nAtoms, unsigned int tot_sids){
+    unsigned int i=0;
+    for(i;i<nAtoms;i++){//for equivalence class
+        enumerate_freq(f1->sons[i]->sons,min_sup,f1->sons[i]->nSons,tot_sids,1);
+    };
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 char * spade(FILE* fp, float min_sup){
     printf("inside spade\n");
+
     F1* F1= one_seq(fp,min_sup);
+
     two_seq(F1->root,min_sup,F1->atoms,F1->tot_sids);
 
-    unsigned int f=0;
-    //for(f;f<F1->atoms;f++){
-        //printer(F1->root->sons[f],F1->root->sons[f]->nSons);
-    //}
-/*
-
-    Z* sequences= enumerate_freq(epsilon);
-*/
+    enumerate(F1->root, min_sup, F1->atoms, F1->tot_sids);
 
     return  NULL;
 }
