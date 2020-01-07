@@ -6,6 +6,7 @@
 int id_counter=0;
 int BFS=0;
 int DFS=1;
+int VERBOSE=0;
 
 //TODO IDEA HASHING W. tail
 struct lineInTable{
@@ -57,15 +58,17 @@ int printer(IS* root,unsigned int sN){
         printf("=============================================\n");
         printf("SEQUENCE: %s\n=================\n",root->sons[i]->sequence);
         printf("support: %d\n rsup: %f\n-----------\n",root->sons[i]->support,root->sons[i]->rsup);
-        printf("V-idlist\n");
-        line* start= root->sons[i]->table->tableline;
-        if(start==NULL) return 0;
+        if(VERBOSE) {
+            printf("V-idlist\n");
+            line *start = root->sons[i]->table->tableline;
+            if (start == NULL) return 0;
 
-        while(start->next!=NULL){
-            printf("sid: %u, eid: %u \n",start->sid,start->eid);
-            start=start->next;
+            while (start->next != NULL) {
+                printf("sid: %u, eid: %u \n", start->sid, start->eid);
+                start = start->next;
+            }
+            printf("sid: %u, eid: %u \n", start->sid, start->eid);
         }
-        printf("sid: %u, eid: %u \n",start->sid,start->eid);
     }
     return 0;
 }
@@ -559,7 +562,39 @@ IS* createKSeq(IS* precedent, IS* conseq,int equal,int level){
 
     line* l1=precedent->table->tableline;
     line* l2;
-    if(equal==0) {
+    if(equal==2){
+        line* l1=conseq->table->tableline;
+        line* l2;
+        if (precedent->prefix==0 && conseq->prefix==0){
+            sprintf(seq2Name, "%s,{%s},{%s}", pref1, b,a);
+            newBorn2Seq->prefix = 0;//////////////////////TODO SUPER UNDERSTAND WHAT TO PUT AS PREFIX EVERYWHERE
+            for (l1; l1 != NULL; l1 = l1->next) {
+                for (l2 = precedent->table->tableline; l2 != NULL && l2->sid <= l1->sid; l2 = l2->next) {
+                    if (l1->sid == l2->sid && l2->eid > l1->eid) {
+                        addLine(newBorn2Seq, l2->sid, l2->eid);
+                    }
+                }
+
+            }
+        }
+        else if(precedent->prefix==0 && conseq->prefix==1) {
+            sprintf(seq2Name, "%s,{%s}", conseq->sequence, a);
+            newBorn2Seq->prefix = 0;//////////////////////TODO SUPER UNDERSTAND WHAT TO PUT AS PREFIX EVERYWHERE
+            for (l1; l1 != NULL; l1 = l1->next) {
+                for (l2 = precedent->table->tableline; l2 != NULL && l2->sid <= l1->sid; l2 = l2->next) {
+                    if (l1->sid == l2->sid && l2->eid > l1->eid) {
+                        addLine(newBorn2Seq, l2->sid, l2->eid);
+                    }
+                }
+
+            }
+        }else {
+            free(newBorn2Seq->table);
+            free(newBorn2Seq);
+            return NULL;
+        }
+    }
+    else if(equal==0) {
         if (precedent->prefix==0 && conseq->prefix==0){
             sprintf(seq2Name, "%s,{%s},{%s}", pref1, a,b);
             newBorn2Seq->prefix = 0;//////////////////////TODO SUPER UNDERSTAND WHAT TO PUT AS PREFIX EVERYWHERE
@@ -644,45 +679,59 @@ int enumerate_freq(IS** f1, float min_sup,unsigned int nAtoms,unsigned int tot_s
 
     if(f1==NULL || nAtoms==0) return 0;
     unsigned int TOTAL_SONS=0;
-    unsigned int allocate=0;
+    unsigned int allocate;
     IS* new_assignment;
-    int i=0,j=0;
+    int i=0,j;
     IS* atom1=NULL;
     IS* atom2=NULL;
 
     for(i;i<nAtoms;i++){
-
+        allocate=1;
         //controlla che il tipo di prefisso sia consono
         atom1=f1[i];
+
+        atom1->sons=(IS**) realloc(atom1->sons, (atom1->nSons+1)*sizeof(IS*));
         new_assignment=NULL;
+
         if(!atom1->prefix){
             if( (new_assignment=createKSeq(atom1,atom1,0,level))!=NULL) {
-                atom1->sons = (IS **) calloc(1, sizeof(IS *));
+                //atom1->sons = (IS **) calloc(1, sizeof(IS *));
                 atom1->sons[atom1->nSons] = new_assignment;
                 atom1->nSons++;
             }
         }
 
         j=i+1;
-        if(j==nAtoms) j=0;
+        //if(j==nAtoms) j=0;
 
-        atom1->sons=(IS**) realloc(atom1->sons, (2*(nAtoms-1)+1)*sizeof(IS*));
-        while(j!=i){//TODO TOGLIERE CIRCOLARITA'
+        //atom1->sons=(IS**) realloc(atom1->sons, (allocate)*sizeof(IS*));
+        while(j<nAtoms){//TODO TOGLIERE CIRCOLARITA' j!=i
 
             atom2=f1[j];
+
             new_assignment=NULL;
             if((new_assignment=createKSeq(atom1,atom2,0,level))!=NULL){
+
+                atom1->sons=(IS**) realloc(atom1->sons, (atom1->nSons+1)*sizeof(IS*));
+
                 atom1->sons[atom1->nSons ]=new_assignment;
                 atom1->nSons++;
             }
             new_assignment=NULL;
             if((new_assignment=createKSeq(atom1,atom2,1,level))!=NULL) {
+                atom1->sons=(IS**) realloc(atom1->sons, (atom1->nSons+1)*sizeof(IS*));
                 atom1->sons[atom1->nSons] = new_assignment;
                 atom1->nSons++;
             }
+            new_assignment=NULL;
+            if((new_assignment=createKSeq(atom1,atom2,2,level))!=NULL) {
+                atom2->sons=(IS**) realloc(atom2->sons, (atom2->nSons+1)*sizeof(IS*));
+                atom2->sons[atom2->nSons] = new_assignment;
+                atom2->nSons++;
+            }
 
             j++;
-            if(j==nAtoms) j=0;
+            //if(j==nAtoms) j=0;
         }
         atom1->nSons=updateRelSup(atom1,atom1->nSons,min_sup,tot_sids);
         TOTAL_SONS=TOTAL_SONS+atom1->nSons;
