@@ -70,17 +70,62 @@ CMakeFiles/SPADE_PROJ.dir/main.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/SPADE_PROJ.dir/main.c.s"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/main.c -o CMakeFiles/SPADE_PROJ.dir/main.c.s
 
+CMakeFiles/SPADE_PROJ.dir/processing.c.o: CMakeFiles/SPADE_PROJ.dir/flags.make
+CMakeFiles/SPADE_PROJ.dir/processing.c.o: ../processing.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/SPADE_PROJ.dir/processing.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/SPADE_PROJ.dir/processing.c.o   -c /cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/processing.c
+
+CMakeFiles/SPADE_PROJ.dir/processing.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/SPADE_PROJ.dir/processing.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/processing.c > CMakeFiles/SPADE_PROJ.dir/processing.c.i
+
+CMakeFiles/SPADE_PROJ.dir/processing.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/SPADE_PROJ.dir/processing.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/processing.c -o CMakeFiles/SPADE_PROJ.dir/processing.c.s
+
+CMakeFiles/SPADE_PROJ.dir/util.c.o: CMakeFiles/SPADE_PROJ.dir/flags.make
+CMakeFiles/SPADE_PROJ.dir/util.c.o: ../util.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/SPADE_PROJ.dir/util.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/SPADE_PROJ.dir/util.c.o   -c /cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/util.c
+
+CMakeFiles/SPADE_PROJ.dir/util.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/SPADE_PROJ.dir/util.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/util.c > CMakeFiles/SPADE_PROJ.dir/util.c.i
+
+CMakeFiles/SPADE_PROJ.dir/util.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/SPADE_PROJ.dir/util.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/util.c -o CMakeFiles/SPADE_PROJ.dir/util.c.s
+
+CMakeFiles/SPADE_PROJ.dir/pseudo_pruning.c.o: CMakeFiles/SPADE_PROJ.dir/flags.make
+CMakeFiles/SPADE_PROJ.dir/pseudo_pruning.c.o: ../pseudo_pruning.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object CMakeFiles/SPADE_PROJ.dir/pseudo_pruning.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/SPADE_PROJ.dir/pseudo_pruning.c.o   -c /cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/pseudo_pruning.c
+
+CMakeFiles/SPADE_PROJ.dir/pseudo_pruning.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/SPADE_PROJ.dir/pseudo_pruning.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/pseudo_pruning.c > CMakeFiles/SPADE_PROJ.dir/pseudo_pruning.c.i
+
+CMakeFiles/SPADE_PROJ.dir/pseudo_pruning.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/SPADE_PROJ.dir/pseudo_pruning.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/pseudo_pruning.c -o CMakeFiles/SPADE_PROJ.dir/pseudo_pruning.c.s
+
 # Object files for target SPADE_PROJ
 SPADE_PROJ_OBJECTS = \
-"CMakeFiles/SPADE_PROJ.dir/main.c.o"
+"CMakeFiles/SPADE_PROJ.dir/main.c.o" \
+"CMakeFiles/SPADE_PROJ.dir/processing.c.o" \
+"CMakeFiles/SPADE_PROJ.dir/util.c.o" \
+"CMakeFiles/SPADE_PROJ.dir/pseudo_pruning.c.o"
 
 # External object files for target SPADE_PROJ
 SPADE_PROJ_EXTERNAL_OBJECTS =
 
 SPADE_PROJ.exe: CMakeFiles/SPADE_PROJ.dir/main.c.o
+SPADE_PROJ.exe: CMakeFiles/SPADE_PROJ.dir/processing.c.o
+SPADE_PROJ.exe: CMakeFiles/SPADE_PROJ.dir/util.c.o
+SPADE_PROJ.exe: CMakeFiles/SPADE_PROJ.dir/pseudo_pruning.c.o
 SPADE_PROJ.exe: CMakeFiles/SPADE_PROJ.dir/build.make
 SPADE_PROJ.exe: CMakeFiles/SPADE_PROJ.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking C executable SPADE_PROJ.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking C executable SPADE_PROJ.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/SPADE_PROJ.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

@@ -77,6 +77,24 @@
 		<Unit filename="/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/main.c">
 			<Option target="SPADE_PROJ"/>
 		</Unit>
+		<Unit filename="/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/processing.c">
+			<Option target="SPADE_PROJ"/>
+		</Unit>
+		<Unit filename="/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/processing.h">
+			<Option target="SPADE_PROJ"/>
+		</Unit>
+		<Unit filename="/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/pseudo_pruning.c">
+			<Option target="SPADE_PROJ"/>
+		</Unit>
+		<Unit filename="/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/pseudo_pruning.h">
+			<Option target="SPADE_PROJ"/>
+		</Unit>
+		<Unit filename="/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/util.c">
+			<Option target="SPADE_PROJ"/>
+		</Unit>
+		<Unit filename="/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/util.h">
+			<Option target="SPADE_PROJ"/>
+		</Unit>
 		<Unit filename="/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>

@@ -150,6 +150,87 @@ main.c.s:
 	$(MAKE) -f CMakeFiles/SPADE_PROJ.dir/build.make CMakeFiles/SPADE_PROJ.dir/main.c.s
 .PHONY : main.c.s
 
+processing.o: processing.c.o
+
+.PHONY : processing.o
+
+# target to build an object file
+processing.c.o:
+	$(MAKE) -f CMakeFiles/SPADE_PROJ.dir/build.make CMakeFiles/SPADE_PROJ.dir/processing.c.o
+.PHONY : processing.c.o
+
+processing.i: processing.c.i
+
+.PHONY : processing.i
+
+# target to preprocess a source file
+processing.c.i:
+	$(MAKE) -f CMakeFiles/SPADE_PROJ.dir/build.make CMakeFiles/SPADE_PROJ.dir/processing.c.i
+.PHONY : processing.c.i
+
+processing.s: processing.c.s
+
+.PHONY : processing.s
+
+# target to generate assembly for a file
+processing.c.s:
+	$(MAKE) -f CMakeFiles/SPADE_PROJ.dir/build.make CMakeFiles/SPADE_PROJ.dir/processing.c.s
+.PHONY : processing.c.s
+
+pseudo_pruning.o: pseudo_pruning.c.o
+
+.PHONY : pseudo_pruning.o
+
+# target to build an object file
+pseudo_pruning.c.o:
+	$(MAKE) -f CMakeFiles/SPADE_PROJ.dir/build.make CMakeFiles/SPADE_PROJ.dir/pseudo_pruning.c.o
+.PHONY : pseudo_pruning.c.o
+
+pseudo_pruning.i: pseudo_pruning.c.i
+
+.PHONY : pseudo_pruning.i
+
+# target to preprocess a source file
+pseudo_pruning.c.i:
+	$(MAKE) -f CMakeFiles/SPADE_PROJ.dir/build.make CMakeFiles/SPADE_PROJ.dir/pseudo_pruning.c.i
+.PHONY : pseudo_pruning.c.i
+
+pseudo_pruning.s: pseudo_pruning.c.s
+
+.PHONY : pseudo_pruning.s
+
+# target to generate assembly for a file
+pseudo_pruning.c.s:
+	$(MAKE) -f CMakeFiles/SPADE_PROJ.dir/build.make CMakeFiles/SPADE_PROJ.dir/pseudo_pruning.c.s
+.PHONY : pseudo_pruning.c.s
+
+util.o: util.c.o
+
+.PHONY : util.o
+
+# target to build an object file
+util.c.o:
+	$(MAKE) -f CMakeFiles/SPADE_PROJ.dir/build.make CMakeFiles/SPADE_PROJ.dir/util.c.o
+.PHONY : util.c.o
+
+util.i: util.c.i
+
+.PHONY : util.i
+
+# target to preprocess a source file
+util.c.i:
+	$(MAKE) -f CMakeFiles/SPADE_PROJ.dir/build.make CMakeFiles/SPADE_PROJ.dir/util.c.i
+.PHONY : util.c.i
+
+util.s: util.c.s
+
+.PHONY : util.s
+
+# target to generate assembly for a file
+util.c.s:
+	$(MAKE) -f CMakeFiles/SPADE_PROJ.dir/build.make CMakeFiles/SPADE_PROJ.dir/util.c.s
+.PHONY : util.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -162,6 +243,15 @@ help:
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
+	@echo "... processing.o"
+	@echo "... processing.i"
+	@echo "... processing.s"
+	@echo "... pseudo_pruning.o"
+	@echo "... pseudo_pruning.i"
+	@echo "... pseudo_pruning.s"
+	@echo "... util.o"
+	@echo "... util.i"
+	@echo "... util.s"
 .PHONY : help
 
 

@@ -5,6 +5,9 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
   "/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/main.c" "/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/cmake-build-debug/CMakeFiles/SPADE_PROJ.dir/main.c.o"
+  "/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/processing.c" "/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/cmake-build-debug/CMakeFiles/SPADE_PROJ.dir/processing.c.o"
+  "/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/pseudo_pruning.c" "/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/cmake-build-debug/CMakeFiles/SPADE_PROJ.dir/pseudo_pruning.c.o"
+  "/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/util.c" "/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/cmake-build-debug/CMakeFiles/SPADE_PROJ.dir/util.c.o"
   )
 set(CMAKE_C_COMPILER_ID "GNU")
 

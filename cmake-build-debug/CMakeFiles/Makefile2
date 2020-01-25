@@ -74,12 +74,12 @@ preinstall:
 CMakeFiles/SPADE_PROJ.dir/all:
 	$(MAKE) -f CMakeFiles/SPADE_PROJ.dir/build.make CMakeFiles/SPADE_PROJ.dir/depend
 	$(MAKE) -f CMakeFiles/SPADE_PROJ.dir/build.make CMakeFiles/SPADE_PROJ.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/cmake-build-debug/CMakeFiles --progress-num=1,2 "Built target SPADE_PROJ"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/cmake-build-debug/CMakeFiles --progress-num=1,2,3,4,5 "Built target SPADE_PROJ"
 .PHONY : CMakeFiles/SPADE_PROJ.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/SPADE_PROJ.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/cmake-build-debug/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/cmake-build-debug/CMakeFiles 5
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/SPADE_PROJ.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/cmake-build-debug/CMakeFiles 0
 .PHONY : CMakeFiles/SPADE_PROJ.dir/rule
