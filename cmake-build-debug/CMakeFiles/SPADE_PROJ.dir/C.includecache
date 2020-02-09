@@ -6,41 +6,15 @@
 
 #IncludeRegexTransform: 
 
-/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/main.c
+C:/Users/Kev/Documents/UNI/VARSAVIA/Datamining/SPADE-PROJ/main.c
 stdio.h
 -
 string.h
 -
 stdlib.h
 -
-structures.h
-/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/structures.h
-processing.h
-/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/processing.h
-util.h
-/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/util.h
-pseudo_pruning.h
-/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/pseudo_pruning.h
-
-/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/processing.h
-
-/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/pseudo_pruning.c
-stdio.h
+math.h
 -
-string.h
+time.h
 -
-stdlib.h
--
-structures.h
-/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/structures.h
-pseudo_pruning.h
-/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/pseudo_pruning.h
-
-/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/pseudo_pruning.h
-
-/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/structures.h
-
-/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/util.h
-structures.h
-/cygdrive/c/Users/Kev/Documents/UNI/VARSAVIA/Datamining/edami/SPADE/SPADE-PROJ/structures.h
 

@@ -53,20 +53,21 @@ unsigned int updateRelSup(IS* root, unsigned int sonNumb, float min_sup, unsigne
             realSons--;
         }
     }
-
-    IS** new_sons= (IS**) calloc(realSons, sizeof(IS*));
-    int k=0;
-    for(i=0;i<realSons;i++){
-        while(k<sonNumb){
-            if(root->sons[k]!=NULL){
-                new_sons[i]=root->sons[k];
+    if(realSons!=sonNumb) {
+        IS **new_sons = (IS **) calloc(realSons, sizeof(IS *));
+        int k = 0;
+        for (i = 0; i < realSons; i++) {
+            while (k < sonNumb) {
+                if (root->sons[k] != NULL) {
+                    new_sons[i] = root->sons[k];
+                    k++;
+                    break;
+                }
                 k++;
-                break;
             }
-            k++;
         }
+        free(root->sons);
+        root->sons = new_sons;
     }
-    free(root->sons);
-    root->sons=new_sons;
     return realSons;
 }

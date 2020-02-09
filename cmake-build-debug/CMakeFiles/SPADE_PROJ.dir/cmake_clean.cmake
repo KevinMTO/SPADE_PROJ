@@ -1,9 +1,7 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/SPADE_PROJ.dir/main.c.o"
-  "CMakeFiles/SPADE_PROJ.dir/processing.c.o"
-  "CMakeFiles/SPADE_PROJ.dir/pseudo_pruning.c.o"
-  "CMakeFiles/SPADE_PROJ.dir/util.c.o"
+  "CMakeFiles/SPADE_PROJ.dir/main.c.obj"
   "SPADE_PROJ.exe"
+  "SPADE_PROJ.exe.manifest"
   "SPADE_PROJ.pdb"
   "libSPADE_PROJ.dll.a"
 )
